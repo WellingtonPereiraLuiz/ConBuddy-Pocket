@@ -1,20 +1,55 @@
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { Home, Heart, Bell, User, Map, Calendar, Compass, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useFavorites } from '../../hooks/useFavorites';
+import { useAgenda } from '../../hooks/useAgenda';
+import { useNotifications } from '../../hooks/useNotifications';
 
 const Sidebar = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const { favoritesCount } = useFavorites();
+  const { agendaCount } = useAgenda();
+  const { unreadCount } = useNotifications(user?.uid || 'user123');
   const navigate = useNavigate();
 
-  // Atualizar o array navItems:
   const navItems = [
-    { path: '/', icon: Home, label: 'Início' },
-    { path: '/favorites', icon: Heart, label: 'Favoritos' },
-    { path: '/notifications', icon: Bell, label: 'Notificações' },
-    { path: '/agenda', icon: Calendar, label: 'Minha Agenda' },
-    { path: '/profile', icon: User, label: 'Perfil' },
-    { path: '/map', icon: Map, label: 'Mapa' }
+    { 
+      path: '/', 
+      icon: Home, 
+      label: 'Início',
+      badge: null
+    },
+    { 
+      path: '/favorites', 
+      icon: Heart, 
+      label: 'Favoritos',
+      badge: favoritesCount > 0 ? favoritesCount : null
+    },
+    { 
+      path: '/notifications', 
+      icon: Bell, 
+      label: 'Notificações',
+      badge: unreadCount > 0 ? unreadCount : null
+    },
+    { 
+      path: '/agenda', 
+      icon: Calendar, 
+      label: 'Minha Agenda',
+      badge: agendaCount > 0 ? agendaCount : null
+    },
+    { 
+      path: '/profile', 
+      icon: User, 
+      label: 'Perfil',
+      badge: null
+    },
+    { 
+      path: '/map', 
+      icon: Map, 
+      label: 'Mapa',
+      badge: null
+    }
   ];
 
   const handleProfileClick = () => {
@@ -43,14 +78,21 @@ const Sidebar = () => {
             <Link
               key={item.path}
               to={item.path}
-              className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+              className={`flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
                 location.pathname === item.path
                   ? 'bg-primary/10 text-primary'
                   : 'text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800'
               }`}
             >
-              <item.icon className="w-5 h-5 mr-3" />
-              <span>{item.label}</span>
+              <div className="flex items-center">
+                <item.icon className="w-5 h-5 mr-3" />
+                <span>{item.label}</span>
+              </div>
+              {item.badge && (
+                <span className="bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[20px]">
+                  {item.badge > 99 ? '99+' : item.badge}
+                </span>
+              )}
             </Link>
           ))}
         </div>

@@ -117,32 +117,84 @@ export const mockEvents: Event[] = [
   }
 ];
 
-// Mock notifications
-export const mockNotifications = [
+// Mock notifications - Expandidas e melhoradas
+export const mockNotifications: Notification[] = [
   {
     id: '1',
+    userId: 'user123',
     type: 'event',
     title: 'Evento Começando em Breve',
-    message: 'A palestra "React Native na Prática" começa em 30 minutos!',
-    timestamp: new Date(Date.now() + 1800000).toISOString(),
+    message: 'A Comic Con Experience 2025 começa em 2 horas! Não esqueça de verificar sua agenda.',
+    timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 min atrás
     isRead: false,
+    eventId: '1'
   },
   {
     id: '2',
-    type: 'alert',
-    title: 'Alteração de Horário',
-    message: 'O workshop de TypeScript foi adiado para 14h. Atualize sua agenda!',
-    timestamp: new Date(Date.now() - 3600000).toISOString(),
-    isRead: true,
+    userId: 'user123',
+    type: 'ai',
+    title: 'Rota Personalizada Criada',
+    message: 'Sua IA criou uma rota otimizada para os eventos de hoje. Confira sua agenda para ver as recomendações!',
+    timestamp: new Date(Date.now() - 3600000).toISOString(), // 1h atrás
+    isRead: false,
   },
   {
     id: '3',
-    type: 'info',
-    title: 'Nova Palestra Adicionada',
-    message: 'Uma nova palestra sobre Web3 foi adicionada à programação.',
-    timestamp: new Date(Date.now() - 7200000).toISOString(),
-    isRead: false,
+    userId: 'user123',
+    type: 'alert',
+    title: 'Alteração de Horário',
+    message: 'O painel "Futuro dos Games" foi adiado para 16h. Sua agenda foi atualizada automaticamente.',
+    timestamp: new Date(Date.now() - 7200000).toISOString(), // 2h atrás
+    isRead: true,
   },
+  {
+    id: '4',
+    userId: 'user123',
+    type: 'event',
+    title: 'Novo Evento Adicionado',
+    message: 'O evento "Anime Friends 2025" foi adicionado à programação. Confira os detalhes!',
+    timestamp: new Date(Date.now() - 10800000).toISOString(), // 3h atrás
+    isRead: false,
+    eventId: '3'
+  },
+  {
+    id: '5',
+    userId: 'user123',
+    type: 'social',
+    title: 'Amigos Participando',
+    message: '5 dos seus amigos marcaram presença no Brasil Game Show 2025. Que tal se encontrarem lá?',
+    timestamp: new Date(Date.now() - 14400000).toISOString(), // 4h atrás
+    isRead: true,
+    eventId: '2'
+  },
+  {
+    id: '6',
+    userId: 'user123',
+    type: 'location',
+    title: 'Chegou ao Local',
+    message: 'Você chegou ao São Paulo Expo! Confira o mapa para encontrar os eventos da sua agenda.',
+    timestamp: new Date(Date.now() - 18000000).toISOString(), // 5h atrás
+    isRead: true,
+  },
+  {
+    id: '7',
+    userId: 'user123',
+    type: 'system',
+    title: 'Lembrete de Favoritos',
+    message: 'Você tem 3 eventos favoritos acontecendo esta semana. Não esqueça de adicioná-los à sua agenda!',
+    timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 dia atrás
+    isRead: true,
+  },
+  {
+    id: '8',
+    userId: 'user123',
+    type: 'ai',
+    title: 'Recomendação Personalizada',
+    message: 'Baseado nos seus interesses, recomendamos o evento "RPG Con Brasil". Quer saber mais?',
+    timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 dias atrás
+    isRead: true,
+    eventId: '5'
+  }
 ];
 
 // User interests
@@ -164,14 +216,14 @@ export const mapMarkers: MapMarker[] = [
     title: 'Palco Principal',
     description: 'Palco onde acontecem as principais atrações',
     position: [-23.6267, -46.6718],
-    type: 'stage'
+    type: 'stages'
   },
   {
     id: 'm2',
     title: 'Área de Games',
     description: 'Espaço dedicado a jogos eletrônicos e competições',
     position: [-23.6270, -46.6722],
-    type: 'booth'
+    type: 'booths'
   },
   {
     id: 'm3',
@@ -184,13 +236,13 @@ export const mapMarkers: MapMarker[] = [
     id: 'm4',
     title: 'Banheiros',
     position: [-23.6260, -46.6725],
-    type: 'restroom'
+    type: 'restrooms'
   },
   {
     id: 'm5',
     title: 'Saída de Emergência',
     position: [-23.6272, -46.6735],
-    type: 'exit'
+    type: 'exits'
   },
   {
     id: 'm6',

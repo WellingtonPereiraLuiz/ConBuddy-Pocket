@@ -5,27 +5,95 @@ export const useAgenda = () => {
   const [agendaEvents, setAgendaEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    const savedAgenda = localStorage.getItem('agenda');
+    // Carregar agenda do localStorage
+    const savedAgenda = localStorage.getItem('conbuddy_agenda');
     if (savedAgenda) {
-      setAgendaEvents(JSON.parse(savedAgenda));
+      try {
+        const parsedAgenda = JSON.parse(savedAgenda);
+        setAgendaEvents(parsedAgenda);
+      } catch (error) {
+        console.error('Erro ao carregar agenda:', error);
+        localStorage.removeItem('conbuddy_agenda');
+      }
     }
   }, []);
 
+  // Salvar agenda no localStorage sempre que a lista mudar
+  const saveAgenda = (newAgenda: Event[]) => {
+    try {
+      localStorage.setItem('conbuddy_agenda', JSON.stringify(newAgenda));
+      setAgendaEvents(newAgenda);
+    } catch (error) {
+      console.error('Erro ao salvar agenda:', error);
+    }
+  };
+
   const addToAgenda = (event: Event) => {
-    const newAgenda = [...agendaEvents, event];
-    setAgendaEvents(newAgenda);
-    localStorage.setItem('agenda', JSON.stringify(newAgenda));
+    try {
+      // Verificar se o evento já não está na agenda
+      if (!agendaEvents.some(agendaEvent => agendaEvent.id === event.id)) {
+        const newAgenda = [...agendaEvents, event];
+        saveAgenda(newAgenda);
+      }
+    } catch (error) {
+      console.error('Erro ao adicionar à agenda:', error);
+    }
   };
 
   const removeFromAgenda = (eventId: string) => {
-    const newAgenda = agendaEvents.filter(event => event.id !== eventId);
-    setAgendaEvents(newAgenda);
-    localStorage.setItem('agenda', JSON.stringify(newAgenda));
+    try {
+      const newAgenda = agendaEvents.filter(event => event.id !== eventId);
+      saveAgenda(newAgenda);
+    } catch (error) {
+      console.error('Erro ao remover da agenda:', error);
+    }
   };
 
   const isInAgenda = (eventId: string) => {
     return agendaEvents.some(event => event.id === eventId);
   };
 
-  return { agendaEvents, addToAgenda, removeFromAgenda, isInAgenda };
+  // Limpar toda a agenda
+  const clearAgenda = () => {
+    try {
+      localStorage.removeItem('conbuddy_agenda');
+      setAgendaEvents([]);
+    } catch (error) {
+      console.error('Erro ao limpar agenda:', error);
+    }
+  };
+
+  // Obter próximo evento
+  const getNextEvent = () => {
+    const now = new Date();
+    const upcomingEvents = agendaEvents
+      .filter(event => new Date(event.startDate) > now)
+      .sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime());
+    
+    return upcomingEvents.length > 0 ? upcomingEvents[0] : null;
+  };
+
+  // Obter eventos de hoje
+  const getTodayEvents = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return agendaEvents.filter(event => {
+      const eventDate = new Date(event.startDate);
+      return eventDate >= today && eventDate < tomorrow;
+    });
+  };
+
+  return { 
+    agendaEvents, 
+    addToAgenda, 
+    removeFromAgenda, 
+    isInAgenda, 
+    clearAgenda,
+    getNextEvent,
+    getTodayEvents,
+    agendaCount: agendaEvents.length 
+  };
 };

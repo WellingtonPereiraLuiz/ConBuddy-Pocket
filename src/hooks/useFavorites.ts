@@ -6,18 +6,35 @@ export const useFavorites = () => {
 
   useEffect(() => {
     // Carregar favoritos do localStorage
-    const savedFavorites = localStorage.getItem('favorites');
+    const savedFavorites = localStorage.getItem('conbuddy_favorites');
     if (savedFavorites) {
-      setFavorites(JSON.parse(savedFavorites));
+      try {
+        const parsedFavorites = JSON.parse(savedFavorites);
+        setFavorites(parsedFavorites);
+      } catch (error) {
+        console.error('Erro ao carregar favoritos:', error);
+        localStorage.removeItem('conbuddy_favorites');
+      }
     }
   }, []);
 
-  // Adicionar tratamento de erro
+  // Salvar favoritos no localStorage sempre que a lista mudar
+  const saveFavorites = (newFavorites: Event[]) => {
+    try {
+      localStorage.setItem('conbuddy_favorites', JSON.stringify(newFavorites));
+      setFavorites(newFavorites);
+    } catch (error) {
+      console.error('Erro ao salvar favoritos:', error);
+    }
+  };
+
   const addFavorite = (event: Event) => {
     try {
-      const newFavorites = [...favorites, event];
-      setFavorites(newFavorites);
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      // Verificar se o evento já não está nos favoritos
+      if (!favorites.some(fav => fav.id === event.id)) {
+        const newFavorites = [...favorites, event];
+        saveFavorites(newFavorites);
+      }
     } catch (error) {
       console.error('Erro ao adicionar favorito:', error);
     }
@@ -26,8 +43,7 @@ export const useFavorites = () => {
   const removeFavorite = (eventId: string) => {
     try {
       const newFavorites = favorites.filter(fav => fav.id !== eventId);
-      setFavorites(newFavorites);
-      localStorage.setItem('favorites', JSON.stringify(newFavorites));
+      saveFavorites(newFavorites);
     } catch (error) {
       console.error('Erro ao remover favorito:', error);
     }
@@ -37,5 +53,22 @@ export const useFavorites = () => {
     return favorites.some(fav => fav.id === eventId);
   };
 
-  return { favorites, addFavorite, removeFavorite, isFavorite };
+  // Limpar todos os favoritos
+  const clearFavorites = () => {
+    try {
+      localStorage.removeItem('conbuddy_favorites');
+      setFavorites([]);
+    } catch (error) {
+      console.error('Erro ao limpar favoritos:', error);
+    }
+  };
+
+  return { 
+    favorites, 
+    addFavorite, 
+    removeFavorite, 
+    isFavorite, 
+    clearFavorites,
+    favoritesCount: favorites.length 
+  };
 };

@@ -1,13 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, Link } from 'react-router-dom';
-import { Home, Heart, Bell, User, Map } from 'lucide-react';
+import { Home, Heart, Bell, User, Map, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useFavorites } from '../hooks/useFavorites';
+import { useAgenda } from '../hooks/useAgenda';
+import { useNotifications } from '../hooks/useNotifications';
 import Sidebar from '../components/navigation/Sidebar';
 
 const MainLayout = () => {
   const location = useLocation();
   const { user } = useAuth();
+  const { favoritesCount } = useFavorites();
+  const { agendaCount } = useAgenda();
+  const { unreadCount } = useNotifications(user?.uid || 'user123');
+  
   const [showHeader, setShowHeader] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -36,6 +43,8 @@ const MainLayout = () => {
         return 'Meus Favoritos';
       case '/notifications':
         return 'Notificações';
+      case '/agenda':
+        return 'Minha Agenda';
       case '/profile':
         return 'Meu Perfil';
       case '/map':
@@ -44,16 +53,47 @@ const MainLayout = () => {
         if (location.pathname.includes('/event/')) {
           return 'Detalhes do Evento';
         }
-        return 'Bolso ConBuddy';
+        return 'ConBuddy';
     }
   };
 
   const navItems = [
-    { path: '/', icon: Home, label: 'Início' },
-    { path: '/favorites', icon: Heart, label: 'Favoritos' },
-    { path: '/notifications', icon: Bell, label: 'Notificações' },
-    { path: '/profile', icon: User, label: 'Perfil' },
-    { path: '/map', icon: Map, label: 'Mapa' }
+    { 
+      path: '/', 
+      icon: Home, 
+      label: 'Início',
+      badge: null
+    },
+    { 
+      path: '/favorites', 
+      icon: Heart, 
+      label: 'Favoritos',
+      badge: favoritesCount > 0 ? favoritesCount : null
+    },
+    { 
+      path: '/notifications', 
+      icon: Bell, 
+      label: 'Notificações',
+      badge: unreadCount > 0 ? unreadCount : null
+    },
+    { 
+      path: '/agenda', 
+      icon: Calendar, 
+      label: 'Agenda',
+      badge: agendaCount > 0 ? agendaCount : null
+    },
+    { 
+      path: '/profile', 
+      icon: User, 
+      label: 'Perfil',
+      badge: null
+    },
+    { 
+      path: '/map', 
+      icon: Map, 
+      label: 'Mapa',
+      badge: null
+    }
   ];
 
   return (
@@ -89,15 +129,22 @@ const MainLayout = () => {
         </div>
       </main>
       
-      {/* Bottom Navigation */}
+      {/* Bottom Navigation - Com badges */}
       <nav className="bottom-nav md:hidden">
         {navItems.map((item) => (
           <Link
             key={item.path}
             to={item.path}
-            className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
+            className={`nav-item relative ${location.pathname === item.path ? 'active' : ''}`}
           >
-            <item.icon className="w-6 h-6" />
+            <div className="relative">
+              <item.icon className="w-6 h-6" />
+              {item.badge && (
+                <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center min-w-[20px]">
+                  {item.badge > 99 ? '99+' : item.badge}
+                </span>
+              )}
+            </div>
             <span className="text-xs mt-1">{item.label}</span>
           </Link>
         ))}
