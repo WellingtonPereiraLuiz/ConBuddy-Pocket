@@ -1,0 +1,85 @@
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { Home, Heart, Bell, User, Map, Calendar, Compass, LogOut } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+
+const Sidebar = () => {
+  const location = useLocation();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Atualizar o array navItems:
+  const navItems = [
+    { path: '/', icon: Home, label: 'Início' },
+    { path: '/favorites', icon: Heart, label: 'Favoritos' },
+    { path: '/notifications', icon: Bell, label: 'Notificações' },
+    { path: '/agenda', icon: Calendar, label: 'Minha Agenda' },
+    { path: '/profile', icon: User, label: 'Perfil' },
+    { path: '/map', icon: Map, label: 'Mapa' }
+  ];
+
+  const handleProfileClick = () => {
+    navigate('/profile');
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/login');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
+  return (
+    <aside className="sidebar">
+      <div className="flex items-center mb-8">
+        <Compass className="w-8 h-8 text-primary mr-2" />
+        <h1 className="text-xl font-bold">ConBuddy</h1>
+      </div>
+
+      <div className="flex flex-col flex-1">
+        <div className="space-y-1">
+          {navItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`flex items-center px-3 py-2 rounded-lg transition-colors ${
+                location.pathname === item.path
+                  ? 'bg-primary/10 text-primary'
+                  : 'text-text-secondary hover:bg-gray-100 dark:hover:bg-gray-800'
+              }`}
+            >
+              <item.icon className="w-5 h-5 mr-3" />
+              <span>{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Perfil do Usuário */}
+      <div
+        className="flex items-center p-4 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+        onClick={handleProfileClick}
+      >
+        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center mr-3">
+          <User className="w-6 h-6 text-primary" />
+        </div>
+        <div className="flex-1">
+          <h3 className="font-medium">{user?.displayName || 'Usuário'}</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{user?.email}</p>
+        </div>
+      </div>
+
+      {/* Botão de Logout */}
+      <button
+        onClick={handleLogout}
+        className="flex items-center p-4 w-full text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 rounded-lg transition-colors mt-2"
+      >
+        <LogOut className="w-5 h-5 mr-3" />
+        <span>Sair</span>
+      </button>
+    </aside>
+  );
+};
+
+export default Sidebar;
