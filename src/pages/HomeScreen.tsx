@@ -5,12 +5,21 @@ import { Search, Calendar, MapPin, ArrowRight } from 'lucide-react';
 import { useEvents } from '../hooks/useEvents';
 import { formatDate } from '../services/mockData';
 import { Event } from '../models/types';
+import AllEventsModal from '../components/ui/AllEventsModal';
 
 const HomeScreen = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [showAllEventsModal, setShowAllEventsModal] = useState(false);
   const { events, loading, error, getFeaturedEvents } = useEvents(searchTerm);
 
   const featuredEvents: Event[] = getFeaturedEvents();
+  
+  // Limitar eventos próximos a 6 conforme solicitado
+  const upcomingEvents = events.slice(0, 6);
+
+  const handleShowAllEvents = () => {
+    setShowAllEventsModal(true);
+  };
 
   return (
     <motion.div
@@ -38,7 +47,7 @@ const HomeScreen = () => {
         </button>
       </form>
 
-      {/* Eventos em Destaque */}
+      {/* Eventos em Destaque - Limitado a 2-3 eventos conforme solicitado */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Eventos em Destaque</h2>
@@ -53,7 +62,7 @@ const HomeScreen = () => {
           <div className="text-center py-8 text-error">{error}</div>
         ) : featuredEvents.length > 0 ? (
           <div className="space-y-4">
-            {featuredEvents.map((event) => (
+            {featuredEvents.slice(0, 3).map((event) => (
               <Link to={`/event/${event.id}`} key={event.id}>
                 <motion.div whileHover={{ scale: 0.98 }} className="card overflow-hidden">
                   <div className="flex flex-col md:flex-row gap-4">
@@ -94,11 +103,17 @@ const HomeScreen = () => {
         )}
       </section>
 
-      {/* Eventos Próximos */}
+      {/* Eventos Próximos - Implementação do botão "Ver Todos" funcional */}
       <section>
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Eventos Próximos</h2>
-          <Link to="/" className="text-primary text-sm font-medium">Ver todos</Link>
+          {/* Botão "Ver Todos" agora funcional */}
+          <button 
+            onClick={handleShowAllEvents}
+            className="text-primary text-sm font-medium hover:underline"
+          >
+            Ver todos
+          </button>
         </div>
 
         {loading ? (
@@ -107,9 +122,9 @@ const HomeScreen = () => {
           </div>
         ) : error ? (
           <div className="text-center py-6 text-error">{error}</div>
-        ) : events.length > 0 ? (
+        ) : upcomingEvents.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {events.slice(0, 6).map((event) => (
+            {upcomingEvents.map((event) => (
               <Link to={`/event/${event.id}`} key={event.id}>
                 <motion.div whileHover={{ scale: 0.97 }} className="card h-full">
                   <div className="h-40 mb-3 overflow-hidden rounded-lg">
@@ -135,6 +150,13 @@ const HomeScreen = () => {
           </div>
         )}
       </section>
+
+      {/* Modal de Todos os Eventos */}
+      <AllEventsModal 
+        isOpen={showAllEventsModal}
+        onClose={() => setShowAllEventsModal(false)}
+        events={events}
+      />
     </motion.div>
   );
 };

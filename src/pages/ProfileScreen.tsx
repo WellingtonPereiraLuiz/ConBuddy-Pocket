@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { User, Camera, Mail, Calendar, LogOut, CheckCircle, X, Sun, Moon } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -12,8 +12,26 @@ const ProfileScreen = () => {
 
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(user?.displayName || '');
-  const [selectedInterests, setSelectedInterests] = useState<string[]>(['1', '3', '4']);
+  const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [notification, setNotification] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
+  // Carregar interesses salvos do localStorage na inicialização
+  useEffect(() => {
+    const savedInterests = localStorage.getItem('conbuddy_user_interests');
+    if (savedInterests) {
+      try {
+        const parsedInterests = JSON.parse(savedInterests);
+        setSelectedInterests(parsedInterests);
+      } catch (error) {
+        console.error('Erro ao carregar interesses salvos:', error);
+        // Se houver erro, usar interesses padrão
+        setSelectedInterests(['1', '3', '4']);
+      }
+    } else {
+      // Interesses padrão se não houver salvos
+      setSelectedInterests(['1', '3', '4']);
+    }
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -44,12 +62,18 @@ const ProfileScreen = () => {
         type: 'success',
         message: 'Perfil atualizado com sucesso!'
       });
+
+      // Auto-hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar perfil. Tente novamente.';
       setNotification({
         type: 'error',
         message: errorMessage
       });
+
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
@@ -58,6 +82,31 @@ const ProfileScreen = () => {
       setSelectedInterests(selectedInterests.filter(i => i !== id));
     } else {
       setSelectedInterests([...selectedInterests, id]);
+    }
+  };
+
+  // Função para salvar interesses - CORRIGIDA conforme solicitado
+  const handleSaveInterests = () => {
+    try {
+      // Salvar no localStorage
+      localStorage.setItem('conbuddy_user_interests', JSON.stringify(selectedInterests));
+      
+      setNotification({
+        type: 'success',
+        message: 'Interesses salvos com sucesso! Suas recomendações serão personalizadas.'
+      });
+
+      // Auto-hide notification after 3 seconds
+      setTimeout(() => setNotification(null), 3000);
+    } catch (error) {
+      console.error('Erro ao salvar interesses:', error);
+      setNotification({
+        type: 'error',
+        message: 'Erro ao salvar interesses. Tente novamente.'
+      });
+
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => setNotification(null), 5000);
     }
   };
 
@@ -151,11 +200,11 @@ const ProfileScreen = () => {
         </div>
       </div>
 
-      {/* Interests */}
+      {/* Interests - CORRIGIDO conforme solicitado */}
       <div className="card">
         <h3 className="text-xl font-bold mb-4">Meus interesses</h3>
         <p className="text-text-secondary mb-4">
-          Selecione seus interesses para recebermos recomendações personalizadas.
+          Selecione seus interesses para recebermos recomendações personalizadas de eventos.
         </p>
 
         <div className="flex flex-wrap gap-2 mb-4">
@@ -174,7 +223,31 @@ const ProfileScreen = () => {
           ))}
         </div>
 
-        <Button variant="outline" fullWidth>
+        {/* Mostrar interesses selecionados */}
+        {selectedInterests.length > 0 && (
+          <div className="mb-4 p-3 bg-primary/10 rounded-lg">
+            <p className="text-sm text-primary font-medium mb-2">
+              Interesses selecionados ({selectedInterests.length}):
+            </p>
+            <div className="flex flex-wrap gap-1">
+              {selectedInterests.map((interestId) => {
+                const interest = userInterests.find(i => i.id === interestId);
+                return interest ? (
+                  <span key={interestId} className="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full">
+                    {interest.name}
+                  </span>
+                ) : null;
+              })}
+            </div>
+          </div>
+        )}
+
+        <Button 
+          variant="outline" 
+          fullWidth 
+          onClick={handleSaveInterests}
+          disabled={selectedInterests.length === 0}
+        >
           Salvar interesses
         </Button>
       </div>

@@ -11,7 +11,7 @@ const generateDate = (hoursToAdd: number, daysToAdd = 0) => {
   return format(date, "yyyy-MM-dd'T'HH:mm:ss");
 };
 
-// Mock events
+// Mock events - Expandido para 15 eventos conforme solicitado
 export const mockEvents: Event[] = [
   {
     id: '1',
@@ -114,17 +114,198 @@ export const mockEvents: Event[] = [
     category: 'RPG',
     tags: ['rpg', 'boardgames', 'jogos de mesa'],
     isFeatured: false
+  },
+  // Novos eventos adicionados para completar os 15 solicitados
+  {
+    id: '6',
+    title: 'TechCrunch Disrupt São Paulo',
+    description: 'O maior evento de tecnologia e startups da América Latina, com palestras de grandes nomes da tecnologia mundial.',
+    image: 'https://images.pexels.com/photos/1181298/pexels-photo-1181298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'WTC São Paulo',
+    locationDetails: {
+      lat: -23.6134,
+      lng: -46.6978,
+      name: 'WTC São Paulo',
+      address: 'Av. das Nações Unidas, 12551 - Brooklin Novo, São Paulo - SP'
+    },
+    startDate: generateDate(0, 45),
+    endDate: generateDate(0, 47),
+    category: 'Tecnologia',
+    tags: ['tecnologia', 'startups', 'inovação', 'empreendedorismo'],
+    isFeatured: true
+  },
+  {
+    id: '7',
+    title: 'Festival de Música Eletrônica Geek',
+    description: 'Uma experiência única que combina música eletrônica com cultura geek, featuring DJs que tocam remixes de trilhas sonoras de games e animes.',
+    image: 'https://images.pexels.com/photos/1763075/pexels-photo-1763075.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Allianz Parque',
+    locationDetails: {
+      lat: -23.5273,
+      lng: -46.6814,
+      name: 'Allianz Parque',
+      address: 'Av. Francisco Matarazzo, 1705 - Água Branca, São Paulo - SP'
+    },
+    startDate: generateDate(0, 15),
+    endDate: generateDate(0, 16),
+    category: 'Música',
+    tags: ['música', 'eletrônica', 'games', 'anime'],
+    isFeatured: false
+  },
+  {
+    id: '8',
+    title: 'Cosplay Championship Brasil',
+    description: 'O maior campeonato de cosplay do Brasil, com competições em diversas categorias e premiações incríveis.',
+    image: 'https://images.pexels.com/photos/1181467/pexels-photo-1181467.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Centro de Convenções Frei Caneca',
+    locationDetails: {
+      lat: -23.5505,
+      lng: -46.6333,
+      name: 'Centro de Convenções Frei Caneca',
+      address: 'Rua Frei Caneca, 569 - Consolação, São Paulo - SP'
+    },
+    startDate: generateDate(0, 25),
+    endDate: generateDate(0, 26),
+    category: 'Cosplay',
+    tags: ['cosplay', 'competição', 'anime', 'games'],
+    isFeatured: false
+  },
+  {
+    id: '9',
+    title: 'Retro Gaming Expo',
+    description: 'Uma viagem nostálgica pelos clássicos dos videogames, com consoles antigos, competições e encontro com desenvolvedores veteranos.',
+    image: 'https://images.pexels.com/photos/442576/pexels-photo-442576.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Shopping Eldorado',
+    locationDetails: {
+      lat: -23.5631,
+      lng: -46.6919,
+      name: 'Shopping Eldorado',
+      address: 'Av. Rebouças, 3970 - Pinheiros, São Paulo - SP'
+    },
+    startDate: generateDate(0, 8),
+    endDate: generateDate(0, 10),
+    category: 'Games',
+    tags: ['retro', 'games', 'nostalgia', 'arcade'],
+    isFeatured: false
+  },
+  {
+    id: '10',
+    title: 'Workshop de Desenvolvimento de Jogos Indie',
+    description: 'Aprenda a criar seus próprios jogos independentes com desenvolvedores experientes e ferramentas modernas.',
+    image: 'https://images.pexels.com/photos/574071/pexels-photo-574071.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Campus da USP',
+    locationDetails: {
+      lat: -23.5558,
+      lng: -46.7319,
+      name: 'Universidade de São Paulo',
+      address: 'Av. Prof. Luciano Gualberto, 908 - Butantã, São Paulo - SP'
+    },
+    startDate: generateDate(0, 12),
+    endDate: generateDate(0, 14),
+    category: 'Workshop',
+    tags: ['desenvolvimento', 'indie', 'games', 'programação'],
+    isFeatured: false
+  },
+  {
+    id: '11',
+    title: 'Encontro de Colecionadores de Cards',
+    description: 'O maior encontro de colecionadores de trading cards do Brasil, com torneios, trocas e lançamentos exclusivos.',
+    image: 'https://images.pexels.com/photos/1040157/pexels-photo-1040157.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Centro de Convenções Rebouças',
+    locationDetails: {
+      lat: -23.5590,
+      lng: -46.6902,
+      name: 'Centro de Convenções Rebouças',
+      address: 'Av. Dr. Enéas Carvalho de Aguiar, 23 - Cerqueira César, São Paulo - SP'
+    },
+    startDate: generateDate(0, 18),
+    endDate: generateDate(0, 19),
+    category: 'Colecionáveis',
+    tags: ['cards', 'colecionáveis', 'torneio', 'trading'],
+    isFeatured: false
+  },
+  {
+    id: '12',
+    title: 'Feira de Quadrinhos Independentes',
+    description: 'Descubra novos talentos da arte sequencial brasileira, com artistas independentes, fanzines e obras autorais.',
+    image: 'https://images.pexels.com/photos/1181772/pexels-photo-1181772.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Biblioteca Mário de Andrade',
+    locationDetails: {
+      lat: -23.5431,
+      lng: -46.6395,
+      name: 'Biblioteca Mário de Andrade',
+      address: 'Rua da Consolação, 94 - República, São Paulo - SP'
+    },
+    startDate: generateDate(0, 35),
+    endDate: generateDate(0, 36),
+    category: 'Quadrinhos',
+    tags: ['quadrinhos', 'independente', 'arte', 'fanzine'],
+    isFeatured: false
+  },
+  {
+    id: '13',
+    title: 'Maratona de Filmes de Terror Cult',
+    description: 'Uma maratona de 24 horas com os melhores filmes de terror cult e B-movies, com debates e análises.',
+    image: 'https://images.pexels.com/photos/1117132/pexels-photo-1117132.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Cine Belas Artes',
+    locationDetails: {
+      lat: -23.5505,
+      lng: -46.6333,
+      name: 'Cine Belas Artes',
+      address: 'Rua da Consolação, 2423 - Consolação, São Paulo - SP'
+    },
+    startDate: generateDate(0, 40),
+    endDate: generateDate(0, 41),
+    category: 'Cinema',
+    tags: ['terror', 'cult', 'cinema', 'maratona'],
+    isFeatured: false
+  },
+  {
+    id: '14',
+    title: 'Encontro de Streamers e Content Creators',
+    description: 'Networking e workshops para criadores de conteúdo digital, streamers e influenciadores da comunidade geek.',
+    image: 'https://images.pexels.com/photos/4050315/pexels-photo-4050315.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Google Campus São Paulo',
+    locationDetails: {
+      lat: -23.5505,
+      lng: -46.6333,
+      name: 'Google Campus São Paulo',
+      address: 'Rua Bela Cintra, 756 - Consolação, São Paulo - SP'
+    },
+    startDate: generateDate(0, 28),
+    endDate: generateDate(0, 29),
+    category: 'Digital',
+    tags: ['streaming', 'conteúdo', 'influencer', 'networking'],
+    isFeatured: false
+  },
+  {
+    id: '15',
+    title: 'Festival de Robótica e IA',
+    description: 'Explore o futuro da tecnologia com demonstrações de robôs, inteligência artificial e automação.',
+    image: 'https://images.pexels.com/photos/2599244/pexels-photo-2599244.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
+    location: 'Pavilhão da Bienal',
+    locationDetails: {
+      lat: -23.5873,
+      lng: -46.6573,
+      name: 'Pavilhão da Bienal',
+      address: 'Av. Paulista, 1578 - Bela Vista, São Paulo - SP'
+    },
+    startDate: generateDate(0, 50),
+    endDate: generateDate(0, 52),
+    category: 'Tecnologia',
+    tags: ['robótica', 'ia', 'automação', 'futuro'],
+    isFeatured: false
   }
 ];
 
-// Mock notifications - Expandidas e melhoradas
+// Mock notifications - Expandidas para 5 notificações conforme solicitado
 export const mockNotifications: Notification[] = [
   {
     id: '1',
     userId: 'user123',
     type: 'event',
-    title: 'Evento Começando em Breve',
-    message: 'A Comic Con Experience 2025 começa em 2 horas! Não esqueça de verificar sua agenda.',
+    title: 'Evento Começando em Breve!',
+    message: 'A Comic Con Experience 2025 começa em 2 horas! Não esqueça de verificar sua agenda e chegar com antecedência.',
     timestamp: new Date(Date.now() - 1800000).toISOString(), // 30 min atrás
     isRead: false,
     eventId: '1'
@@ -133,8 +314,8 @@ export const mockNotifications: Notification[] = [
     id: '2',
     userId: 'user123',
     type: 'ai',
-    title: 'Rota Personalizada Criada',
-    message: 'Sua IA criou uma rota otimizada para os eventos de hoje. Confira sua agenda para ver as recomendações!',
+    title: '🤖 Rota Personalizada Criada',
+    message: 'Sua IA criou uma rota otimizada para os eventos de hoje baseada nos seus interesses. Confira sua agenda para ver as recomendações personalizadas!',
     timestamp: new Date(Date.now() - 3600000).toISOString(), // 1h atrás
     isRead: false,
   },
@@ -142,56 +323,28 @@ export const mockNotifications: Notification[] = [
     id: '3',
     userId: 'user123',
     type: 'alert',
-    title: 'Alteração de Horário',
-    message: 'O painel "Futuro dos Games" foi adiado para 16h. Sua agenda foi atualizada automaticamente.',
+    title: '⚠️ Alteração de Horário Importante',
+    message: 'O painel "Futuro dos Games" foi adiado para 16h devido a problemas técnicos. Sua agenda foi atualizada automaticamente.',
     timestamp: new Date(Date.now() - 7200000).toISOString(), // 2h atrás
     isRead: true,
   },
   {
     id: '4',
     userId: 'user123',
-    type: 'event',
-    title: 'Novo Evento Adicionado',
-    message: 'O evento "Anime Friends 2025" foi adicionado à programação. Confira os detalhes!',
-    timestamp: new Date(Date.now() - 10800000).toISOString(), // 3h atrás
+    type: 'social',
+    title: '👥 Amigos Participando',
+    message: '5 dos seus amigos marcaram presença no Brasil Game Show 2025. Que tal se encontrarem lá? Veja quem vai estar presente!',
+    timestamp: new Date(Date.now() - 14400000).toISOString(), // 4h atrás
     isRead: false,
-    eventId: '3'
+    eventId: '2'
   },
   {
     id: '5',
     userId: 'user123',
-    type: 'social',
-    title: 'Amigos Participando',
-    message: '5 dos seus amigos marcaram presença no Brasil Game Show 2025. Que tal se encontrarem lá?',
-    timestamp: new Date(Date.now() - 14400000).toISOString(), // 4h atrás
-    isRead: true,
-    eventId: '2'
-  },
-  {
-    id: '6',
-    userId: 'user123',
-    type: 'location',
-    title: 'Chegou ao Local',
-    message: 'Você chegou ao São Paulo Expo! Confira o mapa para encontrar os eventos da sua agenda.',
-    timestamp: new Date(Date.now() - 18000000).toISOString(), // 5h atrás
-    isRead: true,
-  },
-  {
-    id: '7',
-    userId: 'user123',
     type: 'system',
-    title: 'Lembrete de Favoritos',
-    message: 'Você tem 3 eventos favoritos acontecendo esta semana. Não esqueça de adicioná-los à sua agenda!',
+    title: '💡 Dica Personalizada',
+    message: 'Baseado nos seus interesses em RPG e Games, recomendamos o evento "RPG Con Brasil" que acontece na próxima semana. Quer adicionar à sua agenda?',
     timestamp: new Date(Date.now() - 86400000).toISOString(), // 1 dia atrás
-    isRead: true,
-  },
-  {
-    id: '8',
-    userId: 'user123',
-    type: 'ai',
-    title: 'Recomendação Personalizada',
-    message: 'Baseado nos seus interesses, recomendamos o evento "RPG Con Brasil". Quer saber mais?',
-    timestamp: new Date(Date.now() - 172800000).toISOString(), // 2 dias atrás
     isRead: true,
     eventId: '5'
   }
@@ -209,47 +362,49 @@ export const userInterests: UserInterest[] = [
   { id: '8', name: 'Fantasy', icon: 'wand' }
 ];
 
-// Map markers for an event
+// Map markers for São Paulo - Centralizados conforme solicitado
 export const mapMarkers: MapMarker[] = [
   {
     id: 'm1',
-    title: 'Palco Principal',
-    description: 'Palco onde acontecem as principais atrações',
+    title: 'São Paulo Expo',
+    description: 'Local da Comic Con Experience 2025',
     position: [-23.6267, -46.6718],
     type: 'stages'
   },
   {
     id: 'm2',
-    title: 'Área de Games',
-    description: 'Espaço dedicado a jogos eletrônicos e competições',
-    position: [-23.6270, -46.6722],
+    title: 'Expo Center Norte',
+    description: 'Local do Brasil Game Show 2025',
+    position: [-23.5101, -46.6144],
     type: 'booths'
   },
   {
     id: 'm3',
-    title: 'Praça de Alimentação',
-    description: 'Diversos restaurantes e opções de comida',
-    position: [-23.6265, -46.6730],
+    title: 'Distrito Anhembi',
+    description: 'Local do Anime Friends 2025',
+    position: [-23.5155, -46.6371],
     type: 'food'
   },
   {
     id: 'm4',
-    title: 'Banheiros',
-    position: [-23.6260, -46.6725],
-    type: 'restrooms'
+    title: 'Centro Cultural São Paulo',
+    description: 'Feira do Livro Fantástico',
+    position: [-23.5707, -46.6395],
+    type: 'info'
   },
   {
     id: 'm5',
-    title: 'Saída de Emergência',
-    position: [-23.6272, -46.6735],
-    type: 'exits'
+    title: 'Clube Homs',
+    description: 'RPG Con Brasil',
+    position: [-23.5665, -46.6508],
+    type: 'restrooms'
   },
   {
     id: 'm6',
-    title: 'Centro de Informações',
-    description: 'Tire suas dúvidas e pegue o mapa do evento',
-    position: [-23.6268, -46.6710],
-    type: 'info'
+    title: 'WTC São Paulo',
+    description: 'TechCrunch Disrupt São Paulo',
+    position: [-23.6134, -46.6978],
+    type: 'exits'
   }
 ];
 

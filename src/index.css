@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Importar CSS do Leaflet para o mapa */
+@import 'leaflet/dist/leaflet.css';
+
 :root {
   --primary: #6366f1;
   --primary-dark: #4f46e5;
@@ -118,5 +121,32 @@
 
   .main-content {
     @apply md:ml-64 min-h-screen pb-16 md:pb-0;
+  }
+
+  /* Estilos customizados para marcadores do Leaflet */
+  .custom-marker {
+    background: transparent !important;
+    border: none !important;
+  }
+
+  /* Ajustes para popups do Leaflet no tema escuro */
+  .dark .leaflet-popup-content-wrapper {
+    background-color: var(--card);
+    color: var(--text-primary);
+  }
+
+  .dark .leaflet-popup-tip {
+    background-color: var(--card);
+  }
+
+  /* Ajustes para controles do Leaflet no tema escuro */
+  .dark .leaflet-control-zoom a {
+    background-color: var(--card);
+    color: var(--text-primary);
+    border-color: var(--border);
+  }
+
+  .dark .leaflet-control-zoom a:hover {
+    background-color: var(--background);
   }
 }

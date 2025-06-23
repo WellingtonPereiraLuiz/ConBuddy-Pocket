@@ -1,14 +1,45 @@
 import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MapPin, Layers, X, Info } from 'lucide-react';
-import mapboxgl from 'mapbox-gl';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import L from 'leaflet';
 import { mapMarkers } from '../services/mockData';
 import { Button } from '../components/ui/Button';
 import { useTheme } from '../contexts/ThemeContext';
-import 'mapbox-gl/dist/mapbox-gl.css';
 
-// Token do Mapbox (em produção, utilize variáveis de ambiente)
-mapboxgl.accessToken = 'pk.eyJ1IjoiYm9sc29jb25idWRkeSIsImEiOiJjbGs1a3hqZW4wMDJwM2duMWdmbnB5b2tsIn0.ueBlQK6O9VthaTLY83WZGA';
+// Importar CSS do Leaflet
+import 'leaflet/dist/leaflet.css';
+
+// Configurar ícones do Leaflet (necessário para React)
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+});
+
+// Criar ícones personalizados para diferentes tipos de marcadores
+const createCustomIcon = (type: string) => {
+  const colors: { [key: string]: string } = {
+    stages: '#6366f1',      // Primary
+    booths: '#06b6d4',      // Secondary  
+    food: '#f97316',        // Accent
+    restrooms: '#10b981',   // Success
+    exits: '#ef4444',       // Error
+    info: '#f59e0b'         // Warning
+  };
+
+  const color = colors[type] || '#6366f1';
+  
+  return L.divIcon({
+    html: `<div style="background-color: ${color}; width: 24px; height: 24px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
+             <div style="width: 8px; height: 8px; background-color: white; border-radius: 50%;"></div>
+           </div>`,
+    className: 'custom-marker',
+    iconSize: [24, 24],
+    iconAnchor: [12, 12],
+  });
+};
 
 interface MapMarker {
   id: string;
@@ -16,14 +47,41 @@ interface MapMarker {
   position: [number, number];
   title: string;
   description?: string;
-  lngLat: [number, number];
 }
 
-const MapScreen = () => {
-  const mapContainer = useRef<HTMLDivElement>(null);
-  const map = useRef<mapboxgl.Map | null>(null);
+// Componente para controlar o tema do mapa
+const MapThemeController = () => {
   const { isDarkMode } = useTheme();
+  const map = useMap();
 
+  useEffect(() => {
+    // Remover camadas existentes
+    map.eachLayer((layer) => {
+      if (layer instanceof L.TileLayer) {
+        map.removeLayer(layer);
+      }
+    });
+
+    // Adicionar nova camada baseada no tema
+    const tileLayer = isDarkMode
+      ? L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 20
+        })
+      : L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+          maxZoom: 20
+        });
+
+    tileLayer.addTo(map);
+  }, [isDarkMode, map]);
+
+  return null;
+};
+
+const MapScreen = () => {
+  const { isDarkMode } = useTheme();
   const [selectedMarker, setSelectedMarker] = useState<MapMarker | null>(null);
   const [showLayers, setShowLayers] = useState(false);
   const [activeLayers, setActiveLayers] = useState({
@@ -35,76 +93,18 @@ const MapScreen = () => {
     info: true,
   });
 
-  useEffect(() => {
-    if (map.current || !mapContainer.current) return;
-
-    // Escolher estilo baseado no tema
-    const mapStyle = isDarkMode 
-      ? 'mapbox://styles/mapbox/dark-v11' 
-      : 'mapbox://styles/mapbox/light-v11';
-
-    map.current = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: mapStyle,
-      center: [-46.6718, -23.6267],
-      zoom: 16,
-      pitchWithRotate: false,
-    });
-
-    map.current.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    map.current.addControl(new mapboxgl.GeolocateControl({ trackUserLocation: true }), 'top-right');
-
-    map.current.on('load', () => {
-      mapMarkers.forEach((marker) => {
-        const el = document.createElement('div');
-        el.className = 'flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white shadow-lg cursor-pointer hover:scale-110 transition-transform';
-        el.setAttribute('data-type', marker.type);
-
-        el.innerHTML = `<svg width="16" height="16" stroke="currentColor" fill="none"><circle cx="8" cy="8" r="6"/></svg>`;
-
-        const markerInstance = new mapboxgl.Marker(el)
-          .setLngLat([marker.position[1], marker.position[0]])
-          .addTo(map.current!);
-
-        el.addEventListener('click', () => {
-          setSelectedMarker({
-            ...marker,
-            lngLat: [marker.position[1], marker.position[0]],
-          });
-        });
-      });
-    });
-
-    return () => map.current?.remove();
-  }, []);
-
-  // Atualizar estilo do mapa quando o tema mudar
-  useEffect(() => {
-    if (map.current) {
-      const mapStyle = isDarkMode 
-        ? 'mapbox://styles/mapbox/dark-v11' 
-        : 'mapbox://styles/mapbox/light-v11';
-      
-      map.current.setStyle(mapStyle);
-    }
-  }, [isDarkMode]);
-
-  useEffect(() => {
-    document.querySelectorAll('.mapboxgl-marker').forEach((marker) => {
-      const type = marker.getAttribute('data-type');
-      if (type && activeLayers.hasOwnProperty(type)) {
-        marker.classList.toggle('hidden', !activeLayers[type as keyof typeof activeLayers]);
-      }
-    });
-  }, [activeLayers]);
+  // Centro de São Paulo conforme solicitado
+  const centerPosition: [number, number] = [-23.55052, -46.633308];
 
   const toggleLayer = (layer: keyof typeof activeLayers) =>
     setActiveLayers((prev) => ({ ...prev, [layer]: !prev[layer] }));
 
   const closePopup = () => setSelectedMarker(null);
 
-  const flyToMarker = (lngLat: [number, number]) =>
-    map.current?.flyTo({ center: lngLat, zoom: 18, essential: true });
+  // Filtrar marcadores baseado nas camadas ativas
+  const visibleMarkers = mapMarkers.filter(marker => 
+    activeLayers[marker.type as keyof typeof activeLayers]
+  );
 
   const layerLabels = {
     stages: 'Palcos',
@@ -122,7 +122,44 @@ const MapScreen = () => {
       exit={{ opacity: 0 }}
       className="relative h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)]"
     >
-      <div ref={mapContainer} className="absolute inset-0 rounded-xl overflow-hidden" />
+      {/* Mapa usando React-Leaflet conforme solicitado */}
+      <div className="absolute inset-0 rounded-xl overflow-hidden">
+        <MapContainer
+          center={centerPosition}
+          zoom={13}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={false}
+        >
+          {/* Controle de tema do mapa */}
+          <MapThemeController />
+          
+          {/* Marcadores filtrados */}
+          {visibleMarkers.map((marker) => (
+            <Marker
+              key={marker.id}
+              position={marker.position}
+              icon={createCustomIcon(marker.type)}
+              eventHandlers={{
+                click: () => {
+                  setSelectedMarker(marker);
+                },
+              }}
+            >
+              <Popup>
+                <div className="p-2">
+                  <h3 className="font-bold text-lg mb-1">{marker.title}</h3>
+                  {marker.description && (
+                    <p className="text-sm text-gray-600 mb-2">{marker.description}</p>
+                  )}
+                  <span className="inline-block px-2 py-1 bg-primary/10 text-primary rounded-full text-xs">
+                    {marker.type}
+                  </span>
+                </div>
+              </Popup>
+            </Marker>
+          ))}
+        </MapContainer>
+      </div>
 
       {/* Controles de camadas - Melhorados para tema escuro */}
       <div className="absolute top-4 left-4 z-10">
@@ -195,7 +232,7 @@ const MapScreen = () => {
                 <span className={`text-xs px-2 py-1 rounded-full ${
                   isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'
                 }`}>
-                  {selectedMarker.type}
+                  {layerLabels[selectedMarker.type as keyof typeof layerLabels] || selectedMarker.type}
                 </span>
               </div>
             </div>
@@ -220,11 +257,11 @@ const MapScreen = () => {
           )}
           
           <Button 
-            onClick={() => flyToMarker(selectedMarker.lngLat)} 
+            onClick={closePopup}
             className="w-full"
           >
             <MapPin className="h-4 w-4 mr-2" />
-            Centralizar no mapa
+            Fechar
           </Button>
         </motion.div>
       )}
@@ -243,6 +280,39 @@ const MapScreen = () => {
         >
           <Info className="h-5 w-5" />
         </Button>
+      </div>
+
+      {/* Legenda dos marcadores */}
+      <div className="absolute top-4 right-4 z-10">
+        <motion.div 
+          className={`p-3 shadow-lg rounded-lg border ${
+            isDarkMode 
+              ? 'bg-gray-800 border-gray-700 text-white' 
+              : 'bg-white border-gray-200 text-gray-800'
+          }`}
+        >
+          <h4 className="font-bold text-sm mb-2">Legenda</h4>
+          <div className="space-y-1">
+            {Object.entries(layerLabels).map(([type, label]) => (
+              <div key={type} className="flex items-center text-xs">
+                <div 
+                  className="w-3 h-3 rounded-full mr-2 border border-white"
+                  style={{ 
+                    backgroundColor: {
+                      stages: '#6366f1',
+                      booths: '#06b6d4',
+                      food: '#f97316',
+                      restrooms: '#10b981',
+                      exits: '#ef4444',
+                      info: '#f59e0b'
+                    }[type] || '#6366f1'
+                  }}
+                />
+                <span>{label}</span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
       </div>
     </motion.div>
   );
